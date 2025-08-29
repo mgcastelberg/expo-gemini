@@ -50,7 +50,7 @@ export const useBasicPromptStore = create<BasicPrompState>()((set) => ({
             messages: [ geminiMessage, ...state.messages]
         }));
 
-        console.log(geminiResponseText);
+        // console.log(geminiResponseText);
     },
     setGeminiWriting: (isWriting: boolean) => {
         set({ geminiWriting: isWriting });
