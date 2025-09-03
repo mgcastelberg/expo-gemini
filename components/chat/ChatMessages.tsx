@@ -1,6 +1,7 @@
 import { Layout, List, Text } from '@ui-kitten/components';
 import { Fragment } from 'react';
 import { Image } from 'react-native';
+import Markdown from 'react-native-markdown-display';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -65,6 +66,15 @@ const MessageItem = ({
   userColor: string;
 }) => {
   const isCurrentUser = message.sender === 'user';
+  const markdownStyle = isCurrentUser ? {
+    body:{color:'white'},
+    paragraph:{color:'white'},
+    text:{color:'white'}
+  } : {
+    body:{color:'black'},
+    paragraph:{color:'black'},
+    text:{color:'black'}
+  };
 
   return (
     <Layout
@@ -81,7 +91,9 @@ const MessageItem = ({
       }}
     >
       <Text style={{ color: isCurrentUser ? 'white' : 'black' }}>
-        {message.text}
+        <Markdown style={markdownStyle}>
+          {message.text}
+        </Markdown>
       </Text>
     </Layout>
   );
