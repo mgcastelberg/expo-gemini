@@ -1,6 +1,7 @@
 import { Layout, List, Text } from '@ui-kitten/components';
 import { Fragment } from 'react';
 import { Image } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 import {
@@ -11,10 +12,12 @@ import {
 
 interface Props {
   messages: Message[];
+  isGeminiWriting?: boolean;
 }
 
-export const ChatMessages = ({ messages }: Props) => {
+export const ChatMessages = ({ messages, isGeminiWriting }: Props) => {
   const primaryColor = useThemeColor({}, 'icon');
+  // const bgColor = useThemeColor({}, 'background');
 
   return (
     <Layout style={{ flex: 1 }}>
@@ -40,6 +43,16 @@ export const ChatMessages = ({ messages }: Props) => {
           );
         }}
       />
+
+      {isGeminiWriting && (
+        <Animated.View 
+          style={{ marginBottom: 0, padding: 10, backgroundColor: '#c0c9eeff'}}
+          entering={FadeInDown.duration(1500)}
+        >
+          <Text style={{ color: '#2d1c7cff', fontWeight: 'bold' }}>Gemini esta escribiendo...</Text>
+        </Animated.View>
+      )}
+
     </Layout>
   );
 };
