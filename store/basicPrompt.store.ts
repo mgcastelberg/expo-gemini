@@ -1,4 +1,5 @@
-import * as GeminiActions from '@/actions/gemini/basic-prompt.action'; // Tip de importación
+import * as GeminiActions from '@/actions/gemini'; // Tip de importación
+// import * as GeminiActions from '@/actions/gemini/basic-prompt.action'; // Tip de importación
 // import { getBasicPrompt } from '@/actions/gemini/basic-prompt.action'; // import the action
 import uuid from 'react-native-uuid';
 import { create } from 'zustand';
@@ -41,14 +42,17 @@ export const useBasicPromptStore = create<BasicPrompState>()((set) => ({
             messages: [ userMessage, ...state.messages] // invertimos intencionalmente el spread para que aparesca el mensaje primero
         }));
 
-        // peticion a la api y respuesta de Gemini
-        const geminiResponseText = await GeminiActions.getBasicPrompt(text);
-        const geminiMessage = createMessage(geminiResponseText, 'gemini', 'text');
+        // Peticion a la api y respuesta de Gemini
+        GeminiActions.getBasicPromptStream(text);
 
-        set(state => ({
-            geminiWriting: false,
-            messages: [ geminiMessage, ...state.messages]
-        }));
+        // // Peticion a la api y respuesta de Gemini
+        // const geminiResponseText = await GeminiActions.getBasicPrompt(text);
+        // const geminiMessage = createMessage(geminiResponseText, 'gemini', 'text');
+
+        // set(state => ({
+        //     geminiWriting: false,
+        //     messages: [ geminiMessage, ...state.messages]
+        // }));
 
         // console.log(geminiResponseText);
     },
