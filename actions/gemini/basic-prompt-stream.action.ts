@@ -4,7 +4,10 @@ import { fetch } from 'expo/fetch';
 // por lo cual usaremos un fetch
 const API_URL = process.env.EXPO_PUBLIC_GEMINI_API_URL;
 
-export const getBasicPromptStream = async (prompt: string) => {
+export const getBasicPromptStream = async (
+        prompt: string,
+        onChunk: (text: string) => void
+    ) => {
     const response = await fetch(`${API_URL}/basic-prompt-stream`, {
         method: 'POST',
         headers: {
@@ -31,5 +34,6 @@ export const getBasicPromptStream = async (prompt: string) => {
         const chunk = decoder.decode(value);
         result += chunk;
         console.log({result});
+        onChunk(result);
     }
 };

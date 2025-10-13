@@ -35,26 +35,24 @@ export const useBasicPromptStore = create<BasicPrompState>()((set) => ({
     geminiWriting: false,
     messages:[],
     // Actions
-    addMessage: async(text: string) => {
-        const userMessage = createMessage(text, 'user', 'text');
-        set(state => ({
-            geminiWriting: true,
-            messages: [ userMessage, ...state.messages] // invertimos intencionalmente el spread para que aparesca el mensaje primero
+    addMessage: async(prompt: string) => {
+
+        // Con stream 
+        const userMessage = createMessage(prompt, 'user', 'text');
+        const geminiMessage = createMessage('Generando Respuesta....', 'gemini', 'text');
+        
+        set((state) => ({
+            messages: [ geminiMessage, userMessage, ...state.messages] // invertimos intencionalmente el spread para que aparesca el mensaje primero
         }));
 
         // Peticion a la api y respuesta de Gemini
-        GeminiActions.getBasicPromptStream(text);
-
-        // // Peticion a la api y respuesta de Gemini
-        // const geminiResponseText = await GeminiActions.getBasicPrompt(text);
-        // const geminiMessage = createMessage(geminiResponseText, 'gemini', 'text');
-
-        // set(state => ({
-        //     geminiWriting: false,
-        //     messages: [ geminiMessage, ...state.messages]
-        // }));
-
-        // console.log(geminiResponseText);
+        GeminiActions.getBasicPromptStream(prompt, (text) => {
+            set((state) => ({
+                messages: state.messages.map( (msg) => 
+                    msg.id === geminiMessage.id ? { ...msg, text } : msg
+                )
+            }));
+        });
     },
     setGeminiWriting: (isWriting: boolean) => {
         set({ geminiWriting: isWriting });
