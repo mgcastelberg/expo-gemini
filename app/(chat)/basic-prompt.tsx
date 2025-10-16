@@ -47,7 +47,8 @@ const BasicPromptScreen = () => {
       <ChatMessages messages={messages} isGeminiWriting={isGeminiWriting} />
 
       <CustomInputBox 
-        onSendMessage={(message) => {
+        onSendMessage={(message, attachments) => {
+          console.log({message, attachments});
           addMessage(message);
         }} 
       />

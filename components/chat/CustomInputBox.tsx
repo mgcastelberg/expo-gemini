@@ -1,21 +1,23 @@
 import { Button, Input, Layout } from '@ui-kitten/components';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { ImagePickerAsset } from 'expo-image-picker';
+import { Image, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { getGalleryImages } from '@/actions/image-picker/get-gallery-images';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 interface Props {
-  attachments?: any[];
-  onSendMessage: (message: string, attachments?: any[]) => void;
+  // attachments?: any[];
+  onSendMessage: (message: string, attachments?: ImagePickerAsset[]) => void;
 }
 
-const CustomInputBox = ({ attachments = [], onSendMessage }: Props) => {
+const CustomInputBox = ({ onSendMessage }: Props ) => {
   const isAndroid = Platform.OS === 'android';
   const iconColor = useThemeColor({}, 'icon');
 
   // Uso de forma tradicional
   const [text, setText] = useState('');
+  const [images, setImages] = useState<ImagePickerAsset[]>([]); //por defecto es un array vacio
 
   // Handle para el input
   const handleSendMessage = () => {
@@ -24,15 +26,25 @@ const CustomInputBox = ({ attachments = [], onSendMessage }: Props) => {
       console.log(text);
 
       // todo: validations
-      onSendMessage(text.trim());
+      onSendMessage(text.trim(), images);
       setText(''); // Limpiar el campo de texto
+      setImages([]);
       
     }
   };
 
   const handlePickImage = async() => {
     console.log('handlePickImage');
+
     const selectedImages = await getGalleryImages();
+    if (selectedImages.length <= 0 || selectedImages.length > 4) return;
+
+    const availableSlots = 3 - images.length;
+    const imagesToAdd = selectedImages.slice(0, availableSlots);
+    if(imagesToAdd.length > 0) {
+      setImages([...images, ...imagesToAdd]);
+    }
+
   };
 
   return (
@@ -49,10 +61,17 @@ const CustomInputBox = ({ attachments = [], onSendMessage }: Props) => {
           gap: 10,
         }}
       >
-        {/* <Image
-          source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-          style={{ width: 50, height: 50, marginTop: 5 }}
-        /> */}
+
+        {
+          images.map((image, index) => (
+            <Image
+              key={index}
+              source={{ uri: image.uri }}
+              style={{ width: 50, height: 50, marginTop: 5, borderRadius: 5 }}
+            />
+          ))
+        }
+        
       </Layout>
 
       {/* Espacio para escribir y enviar mensaje */}
