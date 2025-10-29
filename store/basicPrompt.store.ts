@@ -7,7 +7,7 @@ import { create } from 'zustand';
 interface BasicPrompState {
     geminiWriting: boolean;
     messages: Message[];
-    addMessage: (text: string) => void;
+    addMessage: (text: string, attachments: any[]) => void;
     setGeminiWriting: (isWriting: boolean) => void;
 }
 interface Message {
@@ -16,10 +16,28 @@ interface Message {
     createdAt: Date;
     sender: 'user' | 'gemini';
     type: 'text' | 'image';
+    images?: any[];
 }
 
 // helper function
-const createMessage = (text: string, sender: 'user' | 'gemini', type: 'text' | 'image'): Message => {
+const createMessage = (
+    text: string, 
+    sender: 'user' | 'gemini', 
+    type: 'text' | 'image', 
+    attachments: any[] = []
+): Message => {
+
+    if(attachments?.length > 0) {
+        return {
+            id: uuid.v4(),
+            text,
+            createdAt: new Date(),
+            sender,
+            type: 'image',
+            images: attachments.map((attachment) => attachment.uri),
+        };
+    }
+
     return {
         id: uuid.v4(),
         text,
@@ -35,10 +53,10 @@ export const useBasicPromptStore = create<BasicPrompState>()((set) => ({
     geminiWriting: false,
     messages:[],
     // Actions
-    addMessage: async(prompt: string) => {
+    addMessage: async(prompt: string, attachments?: any[]) => {
 
         // Con stream 
-        const userMessage = createMessage(prompt, 'user', 'text');
+        const userMessage = createMessage(prompt, 'user', 'text', attachments);
         const geminiMessage = createMessage('Generando Respuesta....', 'gemini', 'text');
         
         set((state) => ({
@@ -46,7 +64,7 @@ export const useBasicPromptStore = create<BasicPrompState>()((set) => ({
         }));
 
         // Peticion a la api y respuesta de Gemini
-        GeminiActions.getBasicPromptStream(prompt, (text) => {
+        GeminiActions.getBasicPromptStream(prompt, attachments || [], (text) => {
             set((state) => ({
                 messages: state.messages.map( (msg) => 
                     msg.id === geminiMessage.id ? { ...msg, text } : msg

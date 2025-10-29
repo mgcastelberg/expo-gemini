@@ -49,7 +49,7 @@ const BasicPromptScreen = () => {
       <CustomInputBox 
         onSendMessage={(message, attachments) => {
           console.log({message, attachments});
-          addMessage(message);
+          addMessage(message, attachments || []);
         }} 
       />
     </Layout>
