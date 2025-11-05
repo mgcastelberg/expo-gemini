@@ -25,7 +25,7 @@ export const getBasicPromptStream = async (
         const formData = new FormData();
         formData.append('prompt', prompt);
 
-        const response = await fetch(`${API_URL}/basic-prompt-stream`, {
+        const response = await fetch(`${API_URL}/basic-prompt-stream-v2`, {
             method: 'POST',
             headers: {
                 'Accept': 'text/plain',

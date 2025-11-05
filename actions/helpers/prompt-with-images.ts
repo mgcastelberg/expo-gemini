@@ -34,9 +34,13 @@ export const promptWithFiles = async (
 export const uploadImage = async ( files: any, body: JsonBody, endpoint: string ) => {
 
   const formData = new FormData();
-  Object.keys(body).forEach( ([key, value]) => {
-      // {prompt, chatId}
-      formData.append(key, value);
+  // Object.keys(body).forEach( ([key, value]) => {
+  //     // {prompt, chatId}
+  //     formData.append(key, value);
+  // });
+
+  Object.entries(body).forEach(([key, value]) => {
+    formData.append(key, value);
   });
 
   // const formData = new FormData();

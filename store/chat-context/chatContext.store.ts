@@ -8,7 +8,7 @@ interface ChatContextState {
     messages: Message[];
     addMessage: (text: string, attachments: any[]) => void;
     clearChat: () => void;
-    // setGeminiWriting: (isWriting: boolean) => void;
+    setGeminiWriting: (isWriting: boolean) => void;
 }
 interface Message {
     id: string;
