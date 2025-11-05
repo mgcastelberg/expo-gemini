@@ -7,14 +7,21 @@ export interface FileType {
     type?: string;
 }
 
+// Armamos una interface para mandar cualquier cantidad de data
+interface JsonBody {
+    [key: string]: any;
+}
+
 export const promptWithFiles = async (
   endpoint: string,
-  prompt: string,
+  body: JsonBody,
+  // prompt: string,
   files: FileType[]
 ): Promise<string> => {
 
     try {
-        const response = await uploadImage(files, prompt, endpoint);
+        // const response = await uploadImage(files, prompt, endpoint);
+        const response = await uploadImage(files, body, endpoint);
         return response.data as string;
     } catch ( error ) {
         console.error( JSON.stringify( error, null, 2 ) );
@@ -23,9 +30,17 @@ export const promptWithFiles = async (
 
 };
 
-export const uploadImage = async ( files: any, prompt: string, endpoint: string ) => {
+// export const uploadImage = async ( files: any, prompt: string, endpoint: string ) => {
+export const uploadImage = async ( files: any, body: JsonBody, endpoint: string ) => {
 
   const formData = new FormData();
+  Object.keys(body).forEach( ([key, value]) => {
+      // {prompt, chatId}
+      formData.append(key, value);
+  });
+
+  // const formData = new FormData();
+
   files.forEach((file: any)=> {
     formData.append("files", {
       uri: file.uri,
@@ -34,7 +49,7 @@ export const uploadImage = async ( files: any, prompt: string, endpoint: string 
     } as unknown as Blob);
   });
 
-  formData.append( "prompt", prompt );
+  // formData.append( "prompt", prompt );
 
   const response = await geminiApi.post(
     endpoint,

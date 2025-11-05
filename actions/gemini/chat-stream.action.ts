@@ -4,15 +4,16 @@ import { FileType, promptWithFiles } from '../helpers/prompt-with-images';
 // por lo cual usaremos un fetch
 const API_URL = process.env.EXPO_PUBLIC_GEMINI_API_URL;
 
-export const getBasicPromptStream = async (
+export const getChatStream = async (
   prompt: string,
+  chatId: string, // ocuparemos el uuid
   files: FileType[],
   onChunk: (text: string) => void
 ) => {
 
     if(files.length > 0) {
         try {
-            const response = await promptWithFiles('/basic-prompt-stream-v2', {prompt}, files);
+            const response = await promptWithFiles('/chat-stream', {prompt, chatId}, files);
             onChunk(response);
             return;
         } catch ( error ) {
@@ -24,8 +25,9 @@ export const getBasicPromptStream = async (
     try {
         const formData = new FormData();
         formData.append('prompt', prompt);
+        formData.append('chatId', chatId);
 
-        const response = await fetch(`${API_URL}/basic-prompt-stream`, {
+        const response = await fetch(`${API_URL}/chat-stream`, {
             method: 'POST',
             headers: {
                 'Accept': 'text/plain',
